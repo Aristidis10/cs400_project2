@@ -167,21 +167,21 @@ public class Store
     }
 
 
-    public int getHeight()
-    {
-        return getHeightHelper(products.root, 0);
-    }
-
-    private int getHeightHelper(RedBlackTree.Node<Product> parent, int height)
-    {
-        if(parent != null)
-        {
-            height++;
-        }
-        else
-        {
-            return height;
-        }
-        return Integer.max(getHeightHelper(parent.leftChild, height), getHeightHelper(parent.rightChild,height));
-    }
+//     public int getHeight()
+//     {
+//         return getHeightHelper(products.root, 0);
+//     }
+//
+//     private int getHeightHelper(RedBlackTree.Node<Product> parent, int height)
+//     {
+//         if(parent != null)
+//         {
+//             height++;
+//         }
+//         else
+//         {
+//             return height;
+//         }
+//         return Integer.max(getHeightHelper(parent.leftChild, height), getHeightHelper(parent.rightChild,height));
+//     }
 }
