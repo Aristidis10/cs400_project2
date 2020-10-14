@@ -60,8 +60,8 @@ public class Store
         if(lookUp(price) != null)
         {
             System.out.println("Trying to add " + new Product(name, price));
-            System.out.println("There exist " + lookUp(price));
-            throw new IllegalArgumentException("Can't adding a price already exist!");
+            System.out.println("Already existed " + lookUp(price));
+            throw new IllegalArgumentException();
         }
         products.insert(new Product(name, price));
     }
@@ -76,7 +76,7 @@ public class Store
         RedBlackTree.Node<Product> pointer = products.root;
         return lookUpHelper(price, pointer);
     }
-
+    
     /**
      * recursive lookup helper method
      * @param price price of the target
@@ -87,7 +87,7 @@ public class Store
     {
         if(parent == null) return null;
 
-        if(parent.data.price == price) return parent.data.toString();
+        if(parent.data.price == price) return parent.data.toString(); //changed == / .equals
 
         String left = lookUpHelper(price, parent.leftChild);
         if(left != null) return left;
@@ -96,6 +96,38 @@ public class Store
         if(right != null) return right;
 
         return null;
+    }
+    
+    /**
+     * look up products by its name
+     * @param name name of the products
+     * @return string contains products with the param name.
+     */
+    public String lookUp(String name)
+    {
+        RedBlackTree.Node<Product> pointer = products.root;
+        return lookUpHelper(name, pointer);
+    }
+
+    /**
+     * recursive lookup helper method
+     * @param parent current parent of the traversing process
+     * @return a string representation of the product
+     */
+    private String lookUpHelper(String name, RedBlackTree.Node<Product> parent)
+    {
+        if(parent == null) return null;
+
+        String output = "";
+        if(parent.data.name.equals(name)) output += parent.data.toString() + "\n"; //changed == / .equals
+
+        String left = lookUpHelper(name, parent.leftChild);
+        if(left != null) output += left;
+
+        String right = lookUpHelper(name, parent.rightChild);
+        if(right != null) output += right;
+
+        return output;
     }
 
     /**
@@ -160,28 +192,18 @@ public class Store
         }
     }
 
+    /**
+     * Clears the store
+     *
+     * @return
+     */
+    public void clear() {
+      this.products = new RedBlackTree<>();
+    }
+    
     @Override
     public String toString()
     {
         return products.toString();
     }
-
-
-//     public int getHeight()
-//     {
-//         return getHeightHelper(products.root, 0);
-//     }
-//
-//     private int getHeightHelper(RedBlackTree.Node<Product> parent, int height)
-//     {
-//         if(parent != null)
-//         {
-//             height++;
-//         }
-//         else
-//         {
-//             return height;
-//         }
-//         return Integer.max(getHeightHelper(parent.leftChild, height), getHeightHelper(parent.rightChild,height));
-//     }
 }
