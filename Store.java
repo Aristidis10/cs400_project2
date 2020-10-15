@@ -20,15 +20,17 @@ public class Store
 
     private RedBlackTree<Product> products; // The RBT that contains all the products
 
-    private static class Product implements Comparable<Product>
+    static class Product implements Comparable<Product>
     {
         private String name; // name of product
         private double price; // price of the product
+        private Product next; //linked to a product which has the same price;
 
         public Product(String name, double price)
         {
             this.name = name;
             this.price = price;
+            this.next = null;
         }
 
         @Override
@@ -39,7 +41,14 @@ public class Store
         @Override
         public String toString()
         {
-            return "(" + name + ": $" + price + ")";
+            String str = "(" + this.name + ": $" + this.price + ")";
+            Product curr = this;
+            while(curr.next != null)
+            {
+                str += "\n(" + curr.next.name + ": $" + curr.next.price + ")";
+                curr = curr.next;
+            }
+            return str;
         }
     }
 
@@ -50,20 +59,24 @@ public class Store
 
     /**
      * adding a product to the RBT with its name and price
-     * the price of the product should ne unique.
      * @param name of the product
      * @param price of the product
-     * @throws IllegalArgumentException when the price is duplicated
      */
     public void add(String name, double price)
     {
-        if(lookUp(price) != null)
+        Product curr = lookUpHelper(price, products.root);
+        if(curr != null)
         {
-            System.out.println("Trying to add " + new Product(name, price));
-            System.out.println("Already existed " + lookUp(price));
-            throw new IllegalArgumentException();
+            while(curr.next != null)
+            {
+                curr = curr.next;
+            }
+            curr.next = new Product(name,price);
         }
-        products.insert(new Product(name, price));
+        else
+        {
+            products.insert(new Product(name, price));
+        }
     }
 
     /**
@@ -74,7 +87,8 @@ public class Store
     public String lookUp(double price)
     {
         RedBlackTree.Node<Product> pointer = products.root;
-        return lookUpHelper(price, pointer);
+
+        return lookUpHelper(price, pointer).toString();
     }
     
     /**
@@ -83,16 +97,16 @@ public class Store
      * @param parent current parent of the traversing process
      * @return a string representation of the product
      */
-    private String lookUpHelper(double price, RedBlackTree.Node<Product> parent)
+    private Product lookUpHelper(double price, RedBlackTree.Node<Product> parent)
     {
         if(parent == null) return null;
 
-        if(parent.data.price == price) return parent.data.toString(); //changed == / .equals
+        if(parent.data.price == price) return parent.data; //changed == / .equals
 
-        String left = lookUpHelper(price, parent.leftChild);
+        Product left = lookUpHelper(price, parent.leftChild);
         if(left != null) return left;
 
-        String right = lookUpHelper(price, parent.rightChild);
+        Product right = lookUpHelper(price, parent.rightChild);
         if(right != null) return right;
 
         return null;
@@ -119,7 +133,19 @@ public class Store
         if(parent == null) return null;
 
         String output = "";
-        if(parent.data.name.equals(name)) output += parent.data.toString() + "\n"; //changed == / .equals
+        if(parent.data.name.equals(name))
+        {
+            Product curr = parent.data;
+            output += "(" + curr.name + ": $" + curr.price + ")" + "\n"; //changed == / .equals
+            while(curr.next != null)
+            {
+                curr = curr.next;
+                if(curr.name.equals(name))
+                {
+                    output += "(" + curr.name + ": $" + curr.price + ")" + "\n";
+                }
+            }
+        }
 
         String left = lookUpHelper(name, parent.leftChild);
         if(left != null) output += left;
@@ -195,7 +221,6 @@ public class Store
     /**
      * Clears the store
      *
-     * @return
      */
     public void clear() {
       this.products = new RedBlackTree<>();
