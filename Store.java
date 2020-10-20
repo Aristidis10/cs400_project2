@@ -133,18 +133,15 @@ public class Store
         if(parent == null) return null;
 
         String output = "";
-        if(parent.data.name.equals(name))
+
+        Product curr = parent.data;
+        while(curr != null )
         {
-            Product curr = parent.data;
-            output += "(" + curr.name + ": $" + curr.price + ")" + "\n"; //changed == / .equals
-            while(curr.next != null)
+            if(curr.name.equals(name))
             {
-                curr = curr.next;
-                if(curr.name.equals(name))
-                {
-                    output += "(" + curr.name + ": $" + curr.price + ")" + "\n";
-                }
+                output += "(" + curr.name + ": $" + curr.price + ")" + "\n";
             }
+            curr = curr.next;
         }
 
         String left = lookUpHelper(name, parent.leftChild);
